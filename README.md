@@ -65,4 +65,4 @@ https://www.figma.com/design/iQTHGXtbTt9hlOS96ppC4F/movie?node-id=0-1&node-type=
 5. Search "App Password".
 6. Enter App name and get the password and put it in env file.
 
-### Make sure that you implement using MUI.. dont use css or tailwind.. if its needed then inform us and then contribute.
+### Make sure that you implement using MUI.. don't use css or tailwind.. if its needed then inform us and then contribute.
