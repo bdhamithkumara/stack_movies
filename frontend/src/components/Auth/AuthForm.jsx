@@ -6,6 +6,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Signup, Login } from '../../api/Authentication_api/auth';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -90,8 +93,8 @@ export default function AuthForm() {
 
   return (
     <>
-      <Dialog open={true} PaperProps={{ style: { borderRadius: 20, overflow: 'hidden', width: 500 } }}>
-        <Box sx={{ ml: 'auto', padding: 1 }}>
+      <Dialog open={true} PaperProps={{ style: { borderRadius: 20, overflow: 'hidden', width: 500 ,padding: '2rem',  background: 'linear-gradient(to bottom, #ffffff, #f0f4f8)'},}}>
+        {/* <Box sx={{ ml: 'auto', padding: 1 }}>
           <IconButton component={Link} to="/">
             <CloseIcon />
           </IconButton>
@@ -134,10 +137,40 @@ export default function AuthForm() {
               </Button>
             </Typography>
           </Typography>
-        </Box>
+        </Box> */}
+
+<Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h5" fontWeight="bold">
+          {isSignup ? 'Sign Up' : 'Login'}
+        </Typography>
+        <IconButton component={Link} to="/">
+          <CloseIcon />
+        </IconButton>
+      </Box>
+      <Box mt={3}>
+        <RadioGroup
+          row
+          value={userType}
+          onChange={(e) => setUserType(e.target.value)}
+          sx={{ justifyContent: 'center', mb: 3 }}
+        >
+          <FormControlLabel
+            value="User"
+            control={<Radio />}
+            label="User"
+            sx={{ mx: 2 }}
+          />
+          <FormControlLabel
+            value="Admin"
+            control={<Radio />}
+            label="Admin"
+            sx={{ mx: 2 }}
+          />
+        </RadioGroup>
+      </Box>
 
         <form onSubmit={isSignup ? handleSubmit : handleLoginSubmit} >
-          <Box padding={6}  sx={{transform: 'translateY(-2rem)' }} display={"flex"} justifyContent={"center"} flexDirection="column" width={400} margin="auto" alignContent={"center"}>
+          {/* <Box padding={6}  sx={{transform: 'translateY(-2rem)' }} display={"flex"} justifyContent={"center"} flexDirection="column" width={400} margin="auto" alignContent={"center"}>
             {isSignup && (
               <>
                 <FormLabel>Name</FormLabel>
@@ -161,8 +194,33 @@ export default function AuthForm() {
               variant='standard'
               margin='normal'
               sx={{ mb: 4 }}
+            /> */}
+            <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          gap={2}
+          mt={2}
+        >
+          {isSignup && (
+            <TextField
+              label="Name"
+              name="name"
+              value={input.name}
+              onChange={handleInputValue}
+              variant="outlined"
+              fullWidth
             />
-            <FormLabel sx={labelStyle}>Password</FormLabel>
+          )}
+          <TextField
+            label="Email"
+            name="email"
+            value={input.email}
+            onChange={handleInputValue}
+            variant="outlined"
+            fullWidth
+          />
+            {/* <FormLabel sx={labelStyle}>Password</FormLabel>
             <TextField
               type={'password'}
               value={input.password}
@@ -189,9 +247,31 @@ export default function AuthForm() {
                 />
 
               </>
-            )}
-
-            {!isSignup && userType === 'Admin' && (
+            )} */}
+              <TextField
+            label="Password"
+            name="password"
+            type="password"
+            value={input.password}
+            onChange={handleInputValue}
+            variant="outlined"
+            error={input.password.length > 0 && input.password.length < 6}
+            helperText={input.password.length > 0 && input.password.length < 6 ? "Password must be at least 6 characters long" : ""}
+            fullWidth
+          />
+          {isSignup && (
+            <TextField
+              label="Phone"
+              name="phone"
+              value={input.phone}
+              onChange={handleInputValue}
+              variant="outlined"
+              error={input.phone.length > 0 && input.phone.length !== 10}
+              helperText={input.phone.length > 0 && input.phone.length !== 10 ? "Phone number must be exactly 10 digits" : ""}
+              fullWidth
+            />
+          )}
+            {/* {!isSignup && userType === 'Admin' && (
               <>
                 <FormLabel>Secret Key</FormLabel>
                 <TextField
@@ -204,8 +284,19 @@ export default function AuthForm() {
                   sx={{ mb: 4 }}
                 />
               </>
-            )}
+            )} */}
 
+          {!isSignup && userType === 'Admin' && (
+            <TextField
+              label="Secret Key"
+              name="secretKey"
+              type="password"
+              value={secretKey}
+              onChange={(e) => setSecretKey(e.target.value)}
+              variant="outlined"
+              fullWidth
+            />
+          )}
             {/* <Button
               type='submit'
               sx={{ mt: 2, borderRadius: 10 }}
@@ -214,8 +305,8 @@ export default function AuthForm() {
               bgcolor='#1b1b1b'
             >
               {isSignup ? "Sign Up" : "Login"}
-            </Button> */}
-            <Button
+            </Button> by them*/ }
+            {/* <Button
               type='submit'
               sx={{
                 mt: 2,
@@ -231,7 +322,37 @@ export default function AuthForm() {
 
           </Box>
         </form>
-      </Dialog>
+      </Dialog> */}
+      <Button
+            type="submit"
+            variant="contained"
+            sx={{
+              borderRadius: 5,
+              mt: 3,
+              width: '100%',
+              py: 1.5,
+              backgroundColor: '#1976d2',
+              '&:hover': { backgroundColor: '#125ea1' },
+            }}
+          >
+            {isSignup ? 'Sign Up' : 'Login'}
+          </Button>
+        </Box>
+      </form>
+      <Box mt={3} textAlign="center">
+        <Typography>
+          {isSignup
+            ? 'Already have an account?'
+            : "Don't have an account?"}{' '}
+          <Button
+            onClick={() => setIsSignup(!isSignup)}
+            sx={{ textTransform: 'none', color: '#1976d2' }}
+          >
+            {isSignup ? 'Login' : 'Sign Up'}
+          </Button>
+        </Typography>
+      </Box>
+    </Dialog>
     </>
   );
 }
