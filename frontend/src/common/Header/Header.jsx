@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,10 +10,23 @@ import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
+import SearchIcon from '@mui/icons-material/Search';
+import InputBase from '@mui/material/InputBase';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect } from 'react';
+import {
+  alpha,
+  Card,
+  CardContent,
+  Grid,
+  List,
+  ListItem,
+  styled,
+  Typography,
+} from '@mui/material';
+import { getAllMovies } from '../../api/Movie_api/getAllmovie';
 
 function Header() {
   const [value, setValue] = useState(0);
@@ -39,32 +52,79 @@ function Header() {
     endDate: '',
     timeSlots: [],
   }); // New state for movie form
-  
+  const [query, setQuery] = useState('');
+  const [movies, setMovies] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState(movies);
   const [newTimeSlot, setNewTimeSlot] = useState('');
-  
-  const userEmail = localStorage.getItem("userEmail") || "";
-  const userInitial = userEmail ? userEmail.charAt(0).toUpperCase() : "";
-  const userType = localStorage.getItem("userType") || ""; 
-  console.log('type',userType);
-  
+  const userEmail = localStorage.getItem('userEmail') || '';
+  const userInitial = userEmail ? userEmail.charAt(0).toUpperCase() : '';
+  const userType = localStorage.getItem('userType') || '';
+  console.log('type', userType);
+  const inputRef = useRef(null);
+
   const navigate = useNavigate();
 
+  const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+      backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    marginRight: 20,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+      marginLeft: theme.spacing(2),
+      width: 'auto',
+    },
+    zIndex: 10,
+    overflowY: 'auto',
+    paddingLeft: theme.spacing(1),
+  }));
 
+  const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 1),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }));
+
+  const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    width: '100%',
+    '& .MuiInputBase-input': {
+      padding: theme.spacing(1.4, 1, 1, 0),
+      // vertical padding + font size from searchIcon
+      paddingLeft: `calc(1em + ${theme.spacing(3)})`,
+      transition: theme.transitions.create('width'),
+    },
+  }));
 
   useEffect(() => {
-    document.body.style.inert = openTheaterDialog || openMovieDialog ? 'true' : 'false';
+    const fetchAllMovies = async () => {
+      const response = await getAllMovies();
+      setMovies(response);
+    };
+    fetchAllMovies();
+  }, []);
+
+  useEffect(() => {
+    document.body.style.inert =
+      openTheaterDialog || openMovieDialog ? 'true' : 'false';
     return () => {
       document.body.style.inert = 'false';
     };
   }, [openTheaterDialog, openMovieDialog]);
 
-  
-
   const handleLogout = () => {
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("token"); 
-    localStorage.removeItem("userType");
-    navigate("/");
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userType');
+    navigate('/');
     window.location.reload();
   };
 
@@ -100,6 +160,26 @@ function Header() {
     });
   };
 
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setQuery(query);
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+    if (query.length > 0) {
+      setFilteredMovies(
+        movies.filter((movie) =>
+          `${movie.title.toLowerCase()} ${movie.genre.toLowerCase()} ${movie.director.toLowerCase()}`.includes(
+            query
+          )
+        )
+      );
+    } else {
+      setFilteredMovies([]);
+    }
+  };
+  console.log(filteredMovies);
+
   const handleAddTimeSlot = () => {
     if (newTimeSlot) {
       setMovie({ ...movie, timeSlots: [...movie.timeSlots, newTimeSlot] });
@@ -108,20 +188,26 @@ function Header() {
   };
 
   const handleSaveTheater = async () => {
-    if (!theater.name || !theater.city || !theater.ticketPrice || !theater.seats || !theater.image) {
-      alert("Please fill all the fields and provide an image URL.");
-      return;
-    }
-  
-    const token = localStorage.getItem('token'); 
-  
-    if (!token) {
-      alert("You are not authenticated. Please log in.");
+    if (
+      !theater.name ||
+      !theater.city ||
+      !theater.ticketPrice ||
+      !theater.seats ||
+      !theater.image
+    ) {
+      alert('Please fill all the fields and provide an image URL.');
       return;
     }
 
-    console.log("Token retrieved from localStorage:", token);
-  
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      alert('You are not authenticated. Please log in.');
+      return;
+    }
+
+    console.log('Token retrieved from localStorage:', token);
+
     const theaterData = {
       name: theater.name,
       city: theater.city,
@@ -129,24 +215,24 @@ function Header() {
       seats: theater.seats.split(',').map(Number),
       image: theater.image,
     };
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/theatres/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(theaterData),
       });
-  
+
       if (!response.ok) {
         throw new Error('Admin can create only one theater');
       }
-  
+
       const result = await response.json();
       console.log('Theater added:', result);
-      
+
       setTheater({
         name: '',
         city: '',
@@ -160,25 +246,42 @@ function Header() {
       alert(error.message);
     }
   };
-  
+
+  const handleMovie = (movieId) => {
+    navigate(`/movie/${movieId}`);
+    setQuery('');
+    setFilteredMovies([]);
+  };
+
   const handleSaveMovie = async () => {
-    if (!movie.title || !movie.description || !movie.language || !movie.genre || !movie.director || !movie.duration || !movie.startDate || !movie.endDate || !movie.image || !movie.trailer) {
-      alert("Please fill all the fields and provide necessary details.");
+    if (
+      !movie.title ||
+      !movie.description ||
+      !movie.language ||
+      !movie.genre ||
+      !movie.director ||
+      !movie.duration ||
+      !movie.startDate ||
+      !movie.endDate ||
+      !movie.image ||
+      !movie.trailer
+    ) {
+      alert('Please fill all the fields and provide necessary details.');
       return;
     }
-  
-    const token = localStorage.getItem('token'); 
+
+    const token = localStorage.getItem('token');
     const adminId = localStorage.getItem('adminId');
 
-      if (!token) {
-      alert("You are not authenticated or admin ID is missing. Please log in again.");
+    if (!token) {
+      alert(
+        'You are not authenticated or admin ID is missing. Please log in again.'
+      );
       return;
     }
-    
-  
-    console.log("Token retrieved from localStorage:", token);
-    
-    
+
+    console.log('Token retrieved from localStorage:', token);
+
     const movieData = {
       title: movie.title,
       description: movie.description,
@@ -193,24 +296,24 @@ function Header() {
       adminId: adminId,
       timeSlots: movie.timeSlots,
     };
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/movies/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` 
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(movieData),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to add movie. Please check your inputs.');
       }
-  
+
       const result = await response.json();
       console.log('Movie added:', result);
-      
+
       setMovie({
         title: '',
         description: '',
@@ -230,73 +333,204 @@ function Header() {
       alert(error.message);
     }
   };
-  
+
   return (
     <>
-      <AppBar position='sticky' sx={{background:"black"}}>
+      <AppBar position="sticky" sx={{ background: 'black' }}>
         <Toolbar>
-          <Box width={"20%"}>
-            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" height='40'>
-              <path d="M20 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zm.001 6c-.001 0-.001 0 0 0h-.465l-2.667-4H20l.001 4zM15.5 15 10 18v-6l5.5 3zm-.964-6-2.667-4h2.596l2.667 4h-2.596zm-2.404 0H9.536L6.869 5h2.596l2.667 4zM4 5h.465l2.667 4H4V5z" fill="#ffffff" className="fill-000000"></path>
+          <Box width={'20%'}>
+            <svg
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              height="40"
+            >
+              <path
+                d="M20 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V5c0-1.103-.897-2-2-2zm.001 6c-.001 0-.001 0 0 0h-.465l-2.667-4H20l.001 4zM15.5 15 10 18v-6l5.5 3zm-.964-6-2.667-4h2.596l2.667 4h-2.596zm-2.404 0H9.536L6.869 5h2.596l2.667 4zM4 5h.465l2.667 4H4V5z"
+                fill="#ffffff"
+                className="fill-000000"
+              ></path>
             </svg>
           </Box>
-          <Box display={'flex'} marginLeft={'auto'} sx={{cursor:'pointer'}}>
-            <Tabs textColor='inherit' indicatorColor='secondary' onChange={(e,val)=>setValue(val)}>
-              <Tab label="Home" component={Link} to="/" sx={{color:"white"}} />
-              <Tab label="Theater" component={Link} to="/theater" sx={{color:"white"}} />
-              <Tab label="Movies" component={Link} to="/movie" sx={{color:"white"}} />
+          <Box display={'flex'} marginLeft={'auto'} sx={{ cursor: 'pointer' }}>
+            <Tabs
+              textColor="inherit"
+              indicatorColor="secondary"
+              onChange={(e, val) => setValue(val)}
+            >
+              <Tab
+                label="Home"
+                component={Link}
+                to="/"
+                sx={{ color: 'white' }}
+              />
+              <Tab
+                label="Theater"
+                component={Link}
+                to="/theater"
+                sx={{ color: 'white' }}
+              />
+              <Tab
+                label="Movies"
+                component={Link}
+                to="/movie"
+                sx={{ color: 'white' }}
+              />
               {userType === 'Admin' && (
                 <Box>
-                  <Tab label="Add Your Theater" onClick={handleOpenTheaterDialog} sx={{ color: "white" }} />
-                  <Tab label="Add Movie" onClick={handleOpenMovieDialog} sx={{ color: "white" }} /> {/* New Tab for adding movie */}
+                  <Tab
+                    label="Add Your Theater"
+                    onClick={handleOpenTheaterDialog}
+                    sx={{ color: 'white' }}
+                  />
+                  <Tab
+                    label="Add Movie"
+                    onClick={handleOpenMovieDialog}
+                    sx={{ color: 'white' }}
+                  />{' '}
+                  {/* New Tab for adding movie */}
                 </Box>
               )}
+              <Search>
+                <SearchIconWrapper>
+                  <SearchIcon />
+                </SearchIconWrapper>
+                <StyledInputBase
+                  placeholder="Search…"
+                  value={query}
+                  onChange={handleSearch}
+                  inputProps={{ 'aria-label': 'search' }}
+                  inputRef={inputRef}
+                />
+              </Search>
               {userInitial ? (
                 <Box display="flex" alignItems="center">
-                <Box
-                  sx={{
-                  width: 40,
-                  height: 40,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  backgroundColor: '#1b1b1b',
-                  color: 'white',
-                  fontWeight: 'bold',
-                  textTransform: 'uppercase',
-                  marginRight: 2,
-                  cursor: 'pointer', 
-                }}
-                onClick={() => {
-                  if (userType === 'Admin') {
-                    navigate('/admin');
-                  } 
-                  else if(userType === 'User'){
-                    navigate('/user');
-                  }
-                }}
-              >
-                {userInitial}
-                </Box>
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '50%',
+                      backgroundColor: '#1b1b1b',
+                      color: 'white',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                      marginRight: 2,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => {
+                      if (userType === 'Admin') {
+                        navigate('/admin');
+                      } else if (userType === 'User') {
+                        navigate('/user');
+                      }
+                    }}
+                  >
+                    {userInitial}
+                  </Box>
                   <Button
                     variant="outlined"
-                    sx={{ color: "white", borderColor: "white" }}
+                    sx={{ color: 'white', borderColor: 'white' }}
                     onClick={handleLogout}
                   >
                     Logout
                   </Button>
                 </Box>
               ) : (
-                <Tab label="Sign Up" component={Link} to="/register" sx={{ color: "white" }} />
+                <Tab
+                  label="Sign Up"
+                  component={Link}
+                  to="/register"
+                  sx={{ color: 'white' }}
+                />
               )}
             </Tabs>
           </Box>
         </Toolbar>
+        <Box>
+          {filteredMovies.length > 0 && (
+            <List
+              sx={{
+                width: '350px',
+                zIndex: 9999,
+                display: 'block',
+                position: 'absolute',
+                top: '65px',
+                right: '100px',
+                backgroundColor: 'rgb(31, 31, 31)',
+                border: '1px solid #ccc',
+                borderRadius: '8px',
+                boxShadow: '0px 4px 6px rgba(0, 0, 0,0.1)',
+                maxHeight: '400px',
+                overflowY: 'scroll',
+                '&::-webkit-scrollbar': {
+                  display: 'none',
+                },
+              }}
+            >
+              {filteredMovies.map((movie, index) => (
+                <ListItem key={index}>
+                  <Card
+                    sx={{
+                      width: '100%',
+                      boxShadow: 'none',
+                      borderBottom: '1px solid white',
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleMovie(movie._id)}
+                  >
+                    <CardContent
+                      sx={{
+                        '&:last-child': {
+                          paddingBottom: '2px',
+                        },
+                        padding: '0px',
+                        paddingInline: '10px',
+                        color: '#fff',
+                        backgroundColor: 'rgb(31, 31, 31)',
+                        display: 'flex',
+                        gap: '10px',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={movie.image}
+                        alt={movie.title}
+                        sx={{
+                          width: '40px',
+                          height: '50px',
+                        }}
+                      />
+                      <Box>
+                        <Typography variant="body4" fontWeight="500">
+                          {movie.title}
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                          <Typography variant="caption" fontWeight="100" noWrap>
+                            Genre: {movie.genre}
+                          </Typography>
+                          <Typography variant="caption" fontWeight="100">
+                            Director: {movie.director}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </Box>
       </AppBar>
 
       {/* Theater Dialog */}
-      <Dialog open={openTheaterDialog} onClose={handleCloseTheaterDialog} style={{width:'100%'}}>
+      <Dialog
+        open={openTheaterDialog}
+        onClose={handleCloseTheaterDialog}
+        style={{ width: '100%' }}
+      >
         <DialogTitle>
           Add Theater
           <IconButton
@@ -348,13 +582,13 @@ function Header() {
             onChange={handleTheaterChange}
           />
           <TextField
-           margin="dense"
-           name="image"
-           label="Image URL"
-           type="text"
-           style={{ width: '100%' }}
-           variant="standard"
-           onChange={handleTheaterChange}
+            margin="dense"
+            name="image"
+            label="Image URL"
+            type="text"
+            style={{ width: '100%' }}
+            variant="standard"
+            onChange={handleTheaterChange}
           />
         </DialogContent>
         <DialogActions>
@@ -362,9 +596,12 @@ function Header() {
           <Button onClick={handleSaveTheater}>Save</Button>
         </DialogActions>
       </Dialog>
-
       {/* Movie Dialog */}
-      <Dialog open={openMovieDialog} onClose={handleCloseMovieDialog} style={{width:'100%'}}>
+      <Dialog
+        open={openMovieDialog}
+        onClose={handleCloseMovieDialog}
+        style={{ width: '100%' }}
+      >
         <DialogTitle>
           Add Movie
           <IconButton
@@ -473,25 +710,22 @@ function Header() {
           />
         </DialogContent>
 
-         {/* Time Slots Section */}
-         <TextField
-            margin="dense"
-            label="Add Time Slot"
-            type="text"
-            style={{ width: '100%' }}
-            variant="standard"
-            value={newTimeSlot}
-            onChange={(e) => setNewTimeSlot(e.target.value)}
-          />
-          <Button onClick={handleAddTimeSlot}>Add Time Slot</Button>
-          <Box>
-            {movie.timeSlots.map((slot, index) => (
-              <Box key={index}>
-                {slot}
-              </Box>
-            ))}
-          </Box>
-
+        {/* Time Slots Section */}
+        <TextField
+          margin="dense"
+          label="Add Time Slot"
+          type="text"
+          style={{ width: '100%' }}
+          variant="standard"
+          value={newTimeSlot}
+          onChange={(e) => setNewTimeSlot(e.target.value)}
+        />
+        <Button onClick={handleAddTimeSlot}>Add Time Slot</Button>
+        <Box>
+          {movie.timeSlots.map((slot, index) => (
+            <Box key={index}>{slot}</Box>
+          ))}
+        </Box>
         <DialogActions>
           <Button onClick={handleCloseMovieDialog}>Cancel</Button>
           <Button onClick={handleSaveMovie}>Save</Button>
