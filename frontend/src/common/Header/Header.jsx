@@ -17,12 +17,14 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect } from 'react';
 import {
+  Alert,
   alpha,
   Card,
   CardContent,
   Grid,
   List,
   ListItem,
+  Snackbar,
   styled,
   Typography,
 } from '@mui/material';
@@ -31,6 +33,7 @@ import { getAllMovies } from '../../api/Movie_api/getAllmovie';
 function Header() {
   const [value, setValue] = useState(0);
   const [openTheaterDialog, setOpenTheaterDialog] = useState(false);
+  const [showPopup, setShowPopup] = useState();
   const [openMovieDialog, setOpenMovieDialog] = useState(false); // New state for movie dialog
   const [theater, setTheater] = useState({
     name: '',
@@ -127,18 +130,32 @@ function Header() {
       inputRef.current?.focus();
     }, 0);
     if (query.length > 0) {
-      setFilteredMovies(
-        movies.filter((movie) =>
-          `${movie.title.toLowerCase()} ${movie.genre.toLowerCase()} ${movie.director.toLowerCase()}`.includes(
-            query
-          )
+      const filtered = movies.filter((movie) =>
+        `${movie.title.toLowerCase()} ${movie.genre.toLowerCase()} ${movie.director.toLowerCase()}`.includes(
+          query
         )
       );
+      setFilteredMovies(filtered);
+      if (filtered.length === 0 && query !== '') {
+        setShowPopup(true);
+      } else {
+        setShowPopup(false);
+      }
     } else {
       setFilteredMovies([]);
+      setShowPopup(false);
     }
   };
-  console.log(filteredMovies);
+
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      handleMovie(filteredMovies[0]._id);
+    }
+  };
+
+  const handleClosePopup = () => {
+    setShowPopup(false);
+  };
 
   const handleAddTimeSlot = () => {
     if (newTimeSlot) {
@@ -330,6 +347,7 @@ function Header() {
                 placeholder="Search…"
                 value={query}
                 onChange={handleSearch}
+                onKeyPress={handleKeyPress}
                 inputProps={{ 'aria-label': 'search' }}
                 inputRef={inputRef}
                 sx={{
@@ -460,8 +478,23 @@ function Header() {
                 </List>
               )}
             </Box>
+            {showPopup && (
+              <Snackbar
+                open={showPopup}
+                autoHideDuration={2000}
+                disableWindowBlurListener={showPopup}
+                onClose={handleClosePopup}
+              >
+                <Alert
+                  onClose={handleClosePopup}
+                  severity="info"
+                  sx={{ width: '100%' }}
+                >
+                  No results found for your query.
+                </Alert>
+              </Snackbar>
+            )}
           </Box>
-
           <Box display={'flex'} marginLeft={'auto'} sx={{ cursor: 'pointer' }}>
             <Tabs
               textColor="inherit"
