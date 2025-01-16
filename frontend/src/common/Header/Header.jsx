@@ -64,46 +64,6 @@ function Header() {
 
   const navigate = useNavigate();
 
-  const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-      backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    marginRight: 20,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(2),
-      width: 'auto',
-    },
-    zIndex: 10,
-    overflowY: 'auto',
-    paddingLeft: theme.spacing(1),
-  }));
-
-  const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 1),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }));
-
-  const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    width: '100%',
-    '& .MuiInputBase-input': {
-      padding: theme.spacing(1.4, 1, 1, 0),
-      // vertical padding + font size from searchIcon
-      paddingLeft: `calc(1em + ${theme.spacing(3)})`,
-      transition: theme.transitions.create('width'),
-    },
-  }));
-
   useEffect(() => {
     const fetchAllMovies = async () => {
       const response = await getAllMovies();
@@ -338,7 +298,7 @@ function Header() {
     <>
       <AppBar position="sticky" sx={{ background: 'black' }}>
         <Toolbar>
-          <Box width={'20%'}>
+          <Box width={'10%'}>
             <svg
               viewBox="0 0 24 24"
               xmlns="http://www.w3.org/2000/svg"
@@ -351,6 +311,157 @@ function Header() {
               ></path>
             </svg>
           </Box>
+          <Box
+            sx={{
+              maxWidth: { xs: '100%', sm: '50%', md: '30%' },
+              width: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                width: '100%',
+                height: '40px',
+              }}
+            >
+              <TextField
+                placeholder="Search…"
+                value={query}
+                onChange={handleSearch}
+                inputProps={{ 'aria-label': 'search' }}
+                inputRef={inputRef}
+                sx={{
+                  backgroundColor: 'rgba(98, 101, 98, 0.4)',
+                  borderRadius: '6px',
+                  width: '100%',
+                  height: '100%',
+                  paddingRight: '40px',
+                  '& .MuiOutlinedInput-root': {
+                    color: 'white',
+                    padding: '0 12px',
+                    height: '100%',
+                    '& fieldset': {
+                      border: 'none', // Removes the default border
+                    },
+                    '&:hover fieldset': {
+                      border: 'none', // Ensures no border on hover
+                    },
+                    '&.Mui-focused fieldset': {
+                      border: 'none', // Removes outline on focus
+                    },
+                  },
+                }}
+              />
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '50%',
+                  right: '10px',
+                  transform: 'translateY(-50%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  pointerEvents: 'none',
+                }}
+              >
+                <SearchIcon />
+              </Box>
+            </Box>
+            <Box sx={{ position: 'relative', width: '100%' }}>
+              {filteredMovies.length > 0 && (
+                <List
+                  sx={{
+                    width: '100%', // Full width relative to the parent
+                    zIndex: 9999,
+                    minWidth: '300px',
+                    position: 'absolute',
+                    top: 'calc(100% + 8px)', // Position below the search bar
+                    left: '0', // Align with the left edge of the search bar
+                    backgroundColor: 'rgb(31, 31, 31)',
+                    border: '1px solid #ccc',
+                    borderRadius: '8px',
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+                    maxHeight: '400px',
+                    overflowY: 'auto', // Ensures scrollability
+                    padding: 0,
+                    '&::-webkit-scrollbar': {
+                      display: 'none', // Hides the scrollbar
+                    },
+                    '@media (max-width: 600px)': {
+                      maxWidth: '90%', // Adjust width for smaller screens
+                      left: '5%', // Center it for mobile
+                    },
+                  }}
+                >
+                  {filteredMovies.map((movie, index) => (
+                    <ListItem key={index} sx={{ padding: 0 }}>
+                      <Card
+                        sx={{
+                          width: '100%',
+                          boxShadow: 'none',
+                          borderBottom: '1px solid white',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => handleMovie(movie._id)}
+                      >
+                        <CardContent
+                          sx={{
+                            '&:last-child': {
+                              paddingBottom: '8px',
+                            },
+                            padding: '8px',
+                            display: 'flex',
+                            gap: '10px',
+                            alignItems: 'center',
+                            color: '#fff',
+                            backgroundColor: 'rgb(31, 31, 31)',
+                          }}
+                        >
+                          <Box
+                            component="img"
+                            src={movie.image}
+                            alt={movie.title}
+                            sx={{
+                              width: '40px',
+                              height: '50px',
+                              objectFit: 'cover',
+                              borderRadius: '4px',
+                            }}
+                          />
+                          <Box>
+                            <Typography variant="body2" fontWeight="500" noWrap>
+                              {movie.title}
+                            </Typography>
+                            <Box
+                              sx={{ display: 'flex', flexDirection: 'column' }}
+                            >
+                              <Typography
+                                variant="caption"
+                                fontWeight="100"
+                                noWrap
+                              >
+                                Genre: {movie.genre}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                fontWeight="100"
+                                noWrap
+                              >
+                                Director: {movie.director}
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          </Box>
+
           <Box display={'flex'} marginLeft={'auto'} sx={{ cursor: 'pointer' }}>
             <Tabs
               textColor="inherit"
@@ -390,18 +501,7 @@ function Header() {
                   {/* New Tab for adding movie */}
                 </Box>
               )}
-              <Search>
-                <SearchIconWrapper>
-                  <SearchIcon />
-                </SearchIconWrapper>
-                <StyledInputBase
-                  placeholder="Search…"
-                  value={query}
-                  onChange={handleSearch}
-                  inputProps={{ 'aria-label': 'search' }}
-                  inputRef={inputRef}
-                />
-              </Search>
+
               {userInitial ? (
                 <Box display="flex" alignItems="center">
                   <Box
@@ -448,81 +548,6 @@ function Header() {
             </Tabs>
           </Box>
         </Toolbar>
-        <Box>
-          {filteredMovies.length > 0 && (
-            <List
-              sx={{
-                width: '350px',
-                zIndex: 9999,
-                display: 'block',
-                position: 'absolute',
-                top: '65px',
-                right: '100px',
-                backgroundColor: 'rgb(31, 31, 31)',
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                boxShadow: '0px 4px 6px rgba(0, 0, 0,0.1)',
-                maxHeight: '400px',
-                overflowY: 'scroll',
-                '&::-webkit-scrollbar': {
-                  display: 'none',
-                },
-              }}
-            >
-              {filteredMovies.map((movie, index) => (
-                <ListItem key={index}>
-                  <Card
-                    sx={{
-                      width: '100%',
-                      boxShadow: 'none',
-                      borderBottom: '1px solid white',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => handleMovie(movie._id)}
-                  >
-                    <CardContent
-                      sx={{
-                        '&:last-child': {
-                          paddingBottom: '2px',
-                        },
-                        padding: '0px',
-                        paddingInline: '10px',
-                        color: '#fff',
-                        backgroundColor: 'rgb(31, 31, 31)',
-                        display: 'flex',
-                        gap: '10px',
-                        alignItems: 'center',
-                      }}
-                    >
-                      <Box
-                        component="img"
-                        src={movie.image}
-                        alt={movie.title}
-                        sx={{
-                          width: '40px',
-                          height: '50px',
-                        }}
-                      />
-                      <Box>
-                        <Typography variant="body4" fontWeight="500">
-                          {movie.title}
-                        </Typography>
-                        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-                          <Typography variant="caption" fontWeight="100" noWrap>
-                            Genre: {movie.genre}
-                          </Typography>
-                          <Typography variant="caption" fontWeight="100">
-                            Director: {movie.director}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </ListItem>
-              ))}
-            </List>
-          )}
-        </Box>
       </AppBar>
 
       {/* Theater Dialog */}
