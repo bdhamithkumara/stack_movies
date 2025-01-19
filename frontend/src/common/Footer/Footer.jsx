@@ -18,7 +18,7 @@ const Footer = () => {
           <div className='box'>
             <h3>Follow Us</h3>
             <i className='fab fa-facebook-f'></i>
-            <i className='fab fa-twitter'></i>
+            <i className='fa-brands fa-x-twitter'></i>
             <i className='fab fa-github'></i>
             <i className='fab fa-instagram'></i>
           </div>
