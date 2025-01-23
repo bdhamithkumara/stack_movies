@@ -131,9 +131,7 @@ function Header() {
     }, 0);
     if (query.length > 0) {
       const filtered = movies.filter((movie) =>
-        `${movie.title.toLowerCase()} ${movie.genre.toLowerCase()} ${movie.director.toLowerCase()}`.includes(
-          query
-        )
+        movie.title.toLowerCase().includes(query)
       );
       setFilteredMovies(filtered);
       if (filtered.length === 0 && query !== '') {
