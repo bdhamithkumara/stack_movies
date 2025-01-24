@@ -16,6 +16,7 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect } from 'react';
+import './Header.css';
 import {
   Alert,
   alpha,
@@ -495,6 +496,8 @@ function Header() {
           </Box>
           <Box display={'flex'} marginLeft={'auto'} sx={{ cursor: 'pointer' }}>
             <Tabs
+            value={value}
+
               textColor="inherit"
               indicatorColor="secondary"
               onChange={(e, val) => setValue(val)}

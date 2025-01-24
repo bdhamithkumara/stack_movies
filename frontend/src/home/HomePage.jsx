@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Homes from "../components/homes/Homes";
 import Trending from "../components/trending/Trending";
 import Upcomming from "../components/upcoming/Upcomming";
-import { getAllMovies } from "../api/Movie_api/getAllmovie"; 
+import { getAllMovies } from "../api/Movie_api/getAllmovie";
 
 const HomePage = () => {
   const [items, setItems] = useState([]);
@@ -30,10 +30,10 @@ const HomePage = () => {
   return (
     <>
       <Homes />
-      <Upcomming items={items} title='Upcomming Movies' />
-      <Upcomming items={item} title='Latest Movies' />
+      <Upcomming items={items} title='Upcomming Movies' showAdditionalButtons={false} />
+      <Upcomming items={item} title='Latest Movies' showAdditionalButtons={false} />
       <Trending items={item} />
-      <Upcomming items={rec} title='Recommended Movies' />
+      <Upcomming items={rec} title='Recommended Movies' showAdditionalButtons={false} />
     </>
   );
 };
