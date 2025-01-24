@@ -1,0 +1,87 @@
+.movie-page {
+    padding: 20px;
+    color: white;
+    background-color: #1e272d;
+  }
+  
+  .movie-page h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+  
+  .movie-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+  }
+  
+  .movie-card {
+    background-color: #2c3e50;
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s;
+  }
+  
+  .movie-card:hover {
+    transform: scale(1.05);
+  }
+  
+  .movie-card img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .movie-card h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  
+  .movie-card p {
+    font-size: 14px;
+    color: #bdc3c7;
+  }
+  
+  .movie-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  
+  .movie-buttons button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .movie-buttons button:hover {
+    background-color: #2980b9;
+  }
+  
+  .movie-buttons .thumbs-up,
+  .movie-buttons .thumbs-down,
+  .movie-buttons .add-to-list,
+  .movie-buttons .download,
+  .movie-buttons .share {
+    background-color: transparent;
+    color: #bdc3c7;
+    font-size: 1.2rem;
+  }
+  
+  .movie-buttons .thumbs-up:hover,
+  .movie-buttons .thumbs-down:hover,
+  .movie-buttons .add-to-list:hover,
+  .movie-buttons .download:hover,
+  .movie-buttons .share:hover {
+    color: white;
+  }

@@ -53,7 +53,7 @@ import Admin from "./components/Admin/Admin.jsx";
 import User from "./components/User/User.jsx";
 import "./App.css";
 import TheaterMovies from "./components/Theater/TheaterMovies.jsx";
-
+import MoviePage from "./components/Movies/MoviePage";
 
 function App() {
 
@@ -88,7 +88,7 @@ function App() {
         />
         <Route 
           path="/movie" 
-          element={isLoggedIn ? <HomePage /> : <Navigate to="/register" />} 
+          element={isLoggedIn ? <MoviePage /> : <Navigate to="/register" />} 
         />
          
         </Routes>
