@@ -43,7 +43,6 @@ p {
   line-height: 30px;
 }
 
-
 .control-btn button {
   background: none;
   border: 2px solid rgba(255, 255, 255, 0.3);
@@ -73,7 +72,6 @@ p {
 .heading a {
   color: #e50813;
 }
-
 
 .MovieBox {
   width: 430px;
@@ -129,4 +127,109 @@ p {
     width: 320px;
     height: 250px;
   }
+}
+
+.primary-btn {
+  background-color: #e50914; 
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+  background-color: #f40612; 
+}
+
+.movie-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.movie-buttons .watch-trailer,
+.movie-buttons .watch-prime {
+  background-color: #7f8c8d; /* Grey color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.movie-buttons .watch-trailer:hover,
+.movie-buttons .watch-prime:hover {
+  background-color: #95a5a6; /* Lighter grey color on hover */
+}
+
+.movie-buttons .thumbs-up,
+.movie-buttons .thumbs-down,
+.movie-buttons .add-to-list,
+.movie-buttons .download,
+.movie-buttons .share {
+  background-color: #3498db; /* Blue color */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.movie-buttons .thumbs-up:hover,
+.movie-buttons .thumbs-down:hover,
+.movie-buttons .add-to-list:hover,
+.movie-buttons .download:hover,
+.movie-buttons .share:hover {
+  background-color: #2980b9; /* Darker blue color on hover */
+}
+
+.bg-gray-700 {
+  background-color: #7f8c8d; 
+  border-radius: 5px; 
+}
+/* Styles for language, genre, and duration labels */
+.label {
+  background-color: #7f8c8d; 
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px; 
+  display: flex; /* Use flex to center the content */
+  align-items: center; 
+  justify-content: center; /* Center the content */
+  margin-right: 10px; 
+}
+
+.additional-buttons {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+  justify-content: flex-start; 
+  margin-top: 10px;
+}
+
+.additional-buttons button {
+  display: flex;
+  align-items: center; 
+  justify-content: center; /* Center the content */
+  background-color: #7f8c8d; 
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px; 
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.additional-buttons button i {
+  margin-right: 5px; 
+  color: white; 
+}
+
+.additional-buttons button:hover {
+  background-color: #95a5a6; 
 }

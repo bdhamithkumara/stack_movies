@@ -16,6 +16,7 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect } from 'react';
+import './Header.css';
 import {
   Alert,
   alpha,
@@ -131,9 +132,7 @@ function Header() {
     }, 0);
     if (query.length > 0) {
       const filtered = movies.filter((movie) =>
-        `${movie.title.toLowerCase()} ${movie.genre.toLowerCase()} ${movie.director.toLowerCase()}`.includes(
-          query
-        )
+        movie.title.toLowerCase().includes(query)
       );
       setFilteredMovies(filtered);
       if (filtered.length === 0 && query !== '') {
@@ -497,6 +496,8 @@ function Header() {
           </Box>
           <Box display={'flex'} marginLeft={'auto'} sx={{ cursor: 'pointer' }}>
             <Tabs
+            value={value}
+
               textColor="inherit"
               indicatorColor="secondary"
               onChange={(e, val) => setValue(val)}
